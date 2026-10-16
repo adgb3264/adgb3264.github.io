@@ -1,0 +1,5 @@
+# A.D.G.B — adgb3264.github.io
+User-agent: *
+Allow: /
+
+Sitemap: https://adgb3264.github.io/sitemap.xml

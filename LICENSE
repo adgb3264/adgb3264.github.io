@@ -1,21 +1,77 @@
-MIT License
+LICENCIA DE CÓDIGO ABIERTO CON PERMISO PREVIO
 
-Copyright (c) 2026 ADGB
+Copyright (c) 2026 ADGB. Todos los derechos reservados salvo lo
+expresamente permitido en esta licencia.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Contacto para solicitar permisos: adgb3264@gmail.com
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+1. DEFINICIONES
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+"Obra" es este sitio web, su código fuente, diseño, textos, imágenes y
+demás archivos de este repositorio.
+
+"Obra similar" es cualquier proyecto que se base en la Obra, la copie, la
+adapte, la modifique o reproduzca sustancialmente su estructura, diseño o
+código.
+
+"Autor" es ADGB, titular de los derechos de la Obra.
+
+2. LO QUE SE PERMITE SIN SOLICITAR PERMISO
+
+Cualquier persona puede ver, leer y estudiar la Obra, y ejecutarla en su
+propio equipo con fines personales, educativos y no comerciales, sin
+publicarla ni distribuirla.
+
+3. CREACIÓN DE OBRAS SIMILARES
+
+Para crear una Obra similar es obligatorio solicitar permiso previo y por
+escrito al Autor. Sin ese permiso, está prohibido crearla.
+
+4. CÓDIGO ABIERTO OBLIGATORIO
+
+Toda Obra similar autorizada por el Autor deberá:
+
+a) Entregarse con su código fuente completo y todos sus archivos
+   (incluidos recursos, configuraciones y documentación) a quien la reciba
+   o a quien el Autor lo solicite.
+b) Publicarse bajo esta misma licencia, para que el Autor y terceros
+   mantengan las mismas condiciones.
+c) Mantener visible el aviso de copyright y el crédito al Autor.
+
+Quien copie la Obra o una Obra similar autorizada está obligado a facilitar
+el código completo y todo lo necesario para reproducirla.
+
+5. USO COMERCIAL
+
+Queda prohibido vender, licenciar, alquilar o usar la Obra o cualquier Obra
+similar para obtener beneficio económico, directo o indirecto, sin permiso
+previo y por escrito del Autor. El Autor puede pedir condiciones o una
+compensación a cambio de ese permiso.
+
+6. PUBLICACIÓN Y DISTRIBUCIÓN
+
+Para publicar, alojar en línea, distribuir o compartir públicamente la Obra
+o una Obra similar, incluso si es gratuita, se requiere permiso previo y por
+escrito del Autor.
+
+7. PERMISOS POR ESCRITO
+
+Un permiso solo es válido si consta por escrito (correo u otro medio
+verificable) y es otorgado por el Autor. El silencio del Autor no es
+permiso. El Autor puede otorgar, negar o condicionar cualquier permiso.
+
+8. TERMINACIÓN
+
+Si se incumple esta licencia, los derechos concedidos terminan de forma
+automática. Para recuperarlos hay que dejar de usar la Obra y solicitar
+nuevo permiso al Autor.
+
+9. SIN GARANTÍA
+
+LA OBRA SE ENTREGA "TAL CUAL", SIN GARANTÍA DE NINGÚN TIPO, EXPRESA O
+IMPLÍCITA. EL AUTOR NO SERÁ RESPONSABLE POR DAÑOS O RECLAMACIONES
+DERIVADOS DEL USO DE LA OBRA.
+
+10. LEY APLICABLE
+
+Esta licencia se rige por las leyes.
