@@ -7,7 +7,7 @@
    - Botón de sonido de clics (activable / desactivable)
    - Botón de modo oscuro / claro (se recuerda la elección)
    - La A grande (y las otras letras) reaccionan al ratón y al dedo
-   - Capa avanzada: cursor (punto + aro redondo), foco en tarjetas, magnetismo y onda con chispas al hacer clic
+   - Capa avanzada: cursor (punto + aro redondo), foco en tarjetas, magnetismo, onda con chispas al hacer clic y parallax de la portada
    ============================================================ */
 
 (function () {
@@ -414,7 +414,9 @@
   try { cssRed = getComputedStyle(html).getPropertyValue("--red"); } catch (e) { cssRed = ""; }
   var RED = parseHex(cssRed, [225, 6, 0]);
   var RED_HI = mix(RED, [255, 72, 52], 0.85);   // brillo de las esferas: rojo más vivo, nunca rosado
-  var RED_DEEP = mix(RED, [0, 0, 0], 0.72);
+  var RED_DEEP_DARK = mix(RED, [0, 0, 0], 0.72);    // borde de las esferas sobre fondo negro
+  var RED_DEEP_LIGHT = mix(RED, [0, 0, 0], 0.18);   // sobre fondo blanco: sigue siendo rojo, nunca casi negro
+  var RED_DEEP = RED_DEEP_DARK, INK_K = 1;
   var WHITE = [255, 255, 255];
 
   // Color de las líneas neutras del fondo (cuadrícula, contornos): blanco tenue en oscuro, negro tenue en claro
@@ -424,6 +426,9 @@
     try { v = getComputedStyle(html).getPropertyValue("--ink"); } catch (e) { v = ""; }
     var m = /(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/.exec(v || "");
     INK = m ? [+m[1], +m[2], +m[3]] : [255, 255, 255];
+    var inverted = INK[0] < 128;                       // modo invertido (fondo blanco)
+    RED_DEEP = inverted ? RED_DEEP_LIGHT : RED_DEEP_DARK;
+    INK_K = inverted ? 0.5 : 1;                        // cuadros grises más suaves sobre blanco
   }
   readInk();
   d.addEventListener("adgb:theme", readInk);   // se registra antes que las escenas, así ellas ya ven el color nuevo
@@ -638,14 +643,14 @@
         ctx.translate(q.x, q.y);
         ctx.rotate(q.rot);
         if (q.fill) {
-          ctx.fillStyle = q.red ? rgba(RED, (0.12 * inten + 0.02).toFixed(3)) : rgba(INK, 0.035);
+          ctx.fillStyle = q.red ? rgba(RED, (0.12 * inten + 0.02).toFixed(3)) : rgba(INK, (0.035 * INK_K).toFixed(3));
           ctx.fillRect(-hs, -hs, q.s, q.s);
         }
         ctx.lineWidth = 5;                      // halo suave alrededor del borde
-        ctx.strokeStyle = q.red ? rgba(RED, (0.1 * inten).toFixed(3)) : rgba(INK, 0.03);
+        ctx.strokeStyle = q.red ? rgba(RED, (0.1 * inten).toFixed(3)) : rgba(INK, (0.03 * INK_K).toFixed(3));
         ctx.strokeRect(-hs, -hs, q.s, q.s);
         ctx.lineWidth = 1;
-        ctx.strokeStyle = q.red ? rgba(RED, (0.5 * inten).toFixed(3)) : rgba(INK, 0.15);
+        ctx.strokeStyle = q.red ? rgba(RED, (0.5 * inten).toFixed(3)) : rgba(INK, (0.15 * INK_K).toFixed(3));
         ctx.strokeRect(-hs, -hs, q.s, q.s);
         ctx.restore();
       }
@@ -830,21 +835,44 @@
     btn.setAttribute("title", label);
   }
 
-  function setTheme(t) {
-    theme = t === "light" ? "light" : "dark";
-    if (!reduceMotion) {
-      html.classList.add("theme-switching");
-      clearTimeout(themeTimer);
-      themeTimer = setTimeout(function () { html.classList.remove("theme-switching"); }, 480);
-    }
+  // Aplica el tema: atributo, color de la barra del navegador, almacenamiento y aviso a las escenas
+  function applyTheme() {
     html.setAttribute("data-theme", theme);
     var mc = d.querySelector('meta[name="theme-color"]');
     var cs = d.querySelector('meta[name="color-scheme"]');
-    if (mc) mc.setAttribute("content", theme === "light" ? "#ffffff" : "#0a0a0a");
+    if (mc) mc.setAttribute("content", theme === "light" ? "#f5f5f5" : "#0a0a0a");
     if (cs) cs.setAttribute("content", theme);
     try { localStorage.setItem(THEME_KEY, theme); } catch (e) { /* sin almacenamiento */ }
     updateThemeUI();
     d.dispatchEvent(new CustomEvent("adgb:theme"));
+  }
+
+  // Efecto de inversión: el tema nuevo aparece dentro de un círculo que crece desde el botón.
+  // Sin View Transitions se usa un fundido suave; con "reducir movimiento" el cambio es directo.
+  function setTheme(t) {
+    var next = t === "light" ? "light" : "dark";
+    if (next === theme) return;
+    theme = next;
+    if (reduceMotion) { applyTheme(); return; }
+    var btn = d.getElementById("theme");
+    if (btn) { btn.classList.remove("is-spin"); void btn.offsetWidth; btn.classList.add("is-spin"); }
+    var rc = btn ? btn.getBoundingClientRect() : null;
+    var x = rc ? rc.left + rc.width / 2 : window.innerWidth - 40, y = rc ? rc.top + rc.height / 2 : 40;
+    var r = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+    if (typeof d.startViewTransition === "function") {
+      var vt = d.startViewTransition(applyTheme);
+      vt.ready.then(function () {
+        html.animate(
+          { clipPath: ["circle(0px at " + x + "px " + y + "px)", "circle(" + Math.ceil(r) + "px at " + x + "px " + y + "px)"] },
+          { duration: 850, easing: "cubic-bezier(.2,.7,.1,1)", pseudoElement: "::view-transition-new(root)" }
+        );
+      }).catch(function () { /* transición cancelada: el tema ya quedó aplicado */ });
+    } else {
+      html.classList.add("theme-switching");
+      clearTimeout(themeTimer);
+      themeTimer = setTimeout(function () { html.classList.remove("theme-switching"); }, 480);
+      applyTheme();
+    }
   }
 
   var themeBtn = d.getElementById("theme");
@@ -854,6 +882,7 @@
   var bigword = d.querySelector(".bigword");
   if (bigword) {
     var letters = [].slice.call(bigword.querySelectorAll(".bl"));
+    letters.forEach(function (l) { l.setAttribute("data-t", l.textContent); });   // copia para el destello partido (CSS: .bl::after)
     var cool = 0;
 
     var lightUp = function (e) {
@@ -896,12 +925,17 @@
 
   // Cabecera inteligente y cinta que se inclina con la velocidad del scroll
   var header = d.getElementById("header"), lastY = 0, skewV = 0, skewT = 0, mq = d.querySelector(".marquee");
+  var heroInner = d.querySelector(".hero__inner");
   window.addEventListener("scroll", function () {
     var y = window.scrollY || 0, dy = y - lastY; lastY = y;
     if (header) {
       header.classList.toggle("is-stuck", y > 24);
       if (y < 300 || dy < -4) header.classList.remove("is-hidden");
       else if (dy > 4 && !(nav && nav.classList.contains("is-open"))) header.classList.add("is-hidden");
+    }
+    if (heroInner && FX && !reduceMotion && y < window.innerHeight * 1.3) {   // la portada sube más lento y se desvanece
+      heroInner.style.setProperty("--hp", (y * 0.16).toFixed(1));
+      heroInner.style.setProperty("--hf", Math.min(1, y / (window.innerHeight * 0.85)).toFixed(3));
     }
     if (mq && FX) {
       skewV += (Math.max(-8, Math.min(8, dy * -0.25)) - skewV) * 0.5;

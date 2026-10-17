@@ -1,4 +1,4 @@
-# A.D.G.B — Sitio web (rojo y negro, con modo claro · ES / EN / 中文)
+# A.D.G.B — Sitio web (rojo y negro, con inversión a blanco · ES / EN / 中文)
 
 Sitio estático, sin dependencias ni compilación. Funciona tal cual en **GitHub Pages**, gratis.
 
@@ -21,7 +21,7 @@ Todas las páginas comparten **el mismo** `styles.css` y `script.js`, y repiten 
 
 - **Cabecera** (logo, menú, idiomas, sonido, modo oscuro/claro) y **pie** (marca, páginas, redes), iguales en todas.
 - **Cabecera de página** (`.page-head`): migas de pan, título grande y fondo animado.
-- **Secciones** que alternan fondo negro → negro un poco más claro (`is-alt`). La **cinta** y el **bloque final** usan el "negro plomo" (`--surface-2`). El **blanco no se usa como color de fondo ni de botones**: queda solo para el texto (y para el modo claro, que activa el visitante).
+- **Secciones** que alternan fondo negro → negro un poco más claro (`is-alt`). La **cinta** y el **bloque final** usan el "negro plomo" (`--surface-2`). El **blanco no se usa como color de fondo ni de botones**: queda solo para el texto (y para el modo invertido, que activa el visitante).
 - **Componentes únicos**: botón (`.btn`), etiqueta (`.chip`), tarjeta con marcas rojas en las esquinas (`.card`), cuadro con la A (`.tile`), cinta con el nombre (`.marquee`), bloque final (`.cta`).
 - **Tipografía y espacios** salen de variables (`--fs-*`, `--sp-*`), así que todo mantiene el mismo ritmo.
 - Los hovers solo se activan en dispositivos con mouse; en celular se usan efectos al tocar.
@@ -54,8 +54,8 @@ Todas las páginas comparten **el mismo** `styles.css` y `script.js`, y repiten 
   --red: #e10600;      /* el rojo: único, igual en modo oscuro y claro */
   ```
 
-  El texto usa `--fg` (blanco en modo oscuro, negro en modo claro). Los colores de cada modo están justo debajo: `:root` (oscuro) y `html[data-theme="light"]` (claro). **El rojo es el mismo en los dos modos** (`--red`); `--red-deep` solo se usa para sombras de las esferas y estados al apretar.
-- **Modo oscuro / claro:** el botón con el sol / la luna, junto al del sonido, cambia todo el sitio. Arranca en **oscuro**, recuerda la elección del visitante en todas las páginas (`localStorage`, clave `adgb-theme`) y se aplica antes de pintar la página, así no hay parpadeo. El fondo animado y la etiqueta del botón (ES / EN / 中文) también se adaptan.
+  El texto usa `--fg` (blanco en oscuro, negro en invertido). Los colores de cada modo están justo debajo: `:root` (oscuro) y `html[data-theme="light"]` (invertido). **El modo invertido es el negativo exacto del oscuro**: cada gris pasa a su opuesto (255 − valor; por ejemplo `#0a0a0a` ↔ `#f5f5f5`, `#ffffff` ↔ `#000000`). **El rojo no cambia en ningún modo** (`--red`, `--accent-text` y las esferas); `--red-deep` solo se usa para sombras de las esferas y estados al apretar.
+- **Inversión blanco / negro:** el botón con el sol / la luna, junto al del sonido, invierte todo el sitio como un efecto: la página nueva aparece dentro de un círculo que crece desde el botón (View Transitions; el icono gira). En navegadores sin esa función se usa un fundido suave, y con "reducir movimiento" el cambio es directo. Arranca en **oscuro**, recuerda la elección del visitante en todas las páginas (`localStorage`, clave `adgb-theme`) y se aplica antes de pintar la página, así no hay parpadeo. El fondo animado, los cuadros con la A (`.tile`, variables `--tile-bg` y `--tile-ink`), el color de la barra del navegador y la etiqueta del botón (ES / EN / 中文) también se adaptan. Sobre blanco, las esferas conservan un borde rojo (no casi negro) y los cuadros flotantes grises se suavizan; todo eso se ajusta en `script.js` (`RED_DEEP_LIGHT`, `INK_K`).
 - **La A grande:** al pasar el mouse o tocar con el dedo la A (y las otras letras) de la portada, sube y brilla. La clase `is-hot` la pone `script.js`; el aspecto está en `.bl.is-hot` y `.bl--a.is-hot` de `styles.css`.
 - **Las letras A D G B:** en `index.html`, dentro de `<h1 class="bigword">`. La A roja es `bl--a`.
 - **El fondo de esferas y cuadros:** está dibujado en un `<canvas>` por la función `Scene` de `script.js`. Las esferas son siempre bolas rojas rellenas. Para más o menos esferas y cuadros cambia `nS` (esferas) y `nQ` (cuadros). La cuadrícula y las casillas que se encienden tienen los bordes difuminados, y el cursor deja una luz redonda y suave (sin cuadrados). Se pausa solo cuando no se ve.
@@ -84,7 +84,6 @@ Todas las páginas comparten **el mismo** `styles.css` y `script.js`, y repiten 
 - Las tipografías se cargan desde `fonts/`, así que el sitio se ve igual sin conexión.
 - **Abrir en tu computador:** haz doble clic en `index.html`; los enlaces a carpetas funcionan también sin internet.
 - **Sonido:** el botón con el altavoz, junto a los idiomas, activa o desactiva un sonido corto al apretar botones y enlaces. Viene **desactivado** por defecto y recuerda la elección del visitante. Los sonidos se generan en el navegador, no hay archivos de audio.
-- **Modo oscuro / claro:** el botón del sol / la luna está al lado del de sonido. Por defecto el sitio es oscuro (sin blanco salvo en el texto); la elección se recuerda en todas las páginas.
 - **Celulares:** la cabecera se compacta con un menú desplegable (y los botones de sonido y tema se achican en pantallas muy angostas), los botones son más grandes para el dedo, se respetan las zonas con muesca, el fondo usa menos esferas y los efectos de "pasar el mouse" se reemplazan por efectos al tocar.
 - **Accesibilidad:** enlace "Saltar al contenido", foco visible con teclado, contraste alto y etiquetas para lectores de pantalla.
 
@@ -97,4 +96,6 @@ Está al final de `styles.css` (sección 7) y de `script.js` (bloque "Capa avanz
 - Luz del mouse: un halo rojo grande (`.cursor-glow`) que va por delante de todo, incluido el encabezado, y alumbra lo de abajo sin taparlo (`mix-blend-mode`).
 - Efectitos: onda y chispas al hacer clic o tocar, brillo diagonal que cruza las tarjetas al pasar el mouse, línea del título que se dibuja al aparecer, la A del inicio "respira" con una luz, el cuadrito del logo gira, los enlaces del pie y las migas se subrayan en rojo, la cinta se detiene al pasar el mouse y la barra de progreso brilla.
 - Separadores difuminados: los fondos de las secciones se funden con las vecinas y las líneas son una campana desenfocada (variables `--sep-line` y `--sep-glow` en `styles.css`).
+- Más efectos: la letra de la portada se parte con un destello al pasar el mouse (`.bl::after`), un barrido de luz cruza la portada cada pocos segundos (`.hero::before`), los botones rojos tienen un brillo que los cruza, la portada sube más lento que el scroll y se desvanece (parallax), el logo se parte al pasar el mouse, la cinta se desvanece en los bordes y, al cambiar de idioma, el texto sale y entra con desenfoque.
+- Calidad: las tres fuentes principales se precargan (solo en internet, no al abrir el archivo en el computador), el foco con teclado tiene un halo rojo, se respeta \"más contraste\" del sistema, hay estilos para imprimir (sin efectos, blanco y negro) y las páginas traen `og:image:alt` y `og:locale` para mejorar cómo se ve el enlace al compartirlo.
 - Todo se apaga solo con "reducir movimiento" y en pantallas táctiles.
