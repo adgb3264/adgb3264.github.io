@@ -6,12 +6,12 @@ Sitio estático, sin dependencias ni compilación. Funciona tal cual en **GitHub
 
 | Dirección                           | Archivo                  | Contenido                                                                       |
 |-------------------------------------|--------------------------|---------------------------------------------------------------------------------|
-| `adgb3264.github.io`                | `index.html`             | **Inicio**: "desarrollador independiente", las letras A D G B, Sobre mí y enlace a GitHub |
+| `adgb3264.github.io`                | `index.html`             | **Inicio**: "desarrollador independiente", las letras A.D.G.B, Sobre mí y enlace a GitHub |
 | `adgb3264.github.io/projects`       | `projects/index.html`    | Aviso "Próximamente" (todavía no hay proyectos publicados)                      |
 | `adgb3264.github.io/more`           | `more/index.html`        | Tus redes sociales                                                              |
 | (cualquier dirección que no exista) | `404.html`               | Página de error con el mismo diseño, menú, idiomas y pie                        |
 
-Además: `favicon.svg`, `apple-touch-icon.png`, `og-image.png` (la imagen que aparece al compartir el enlace), `robots.txt`, `sitemap.xml` y la carpeta `fonts/` con las tipografías.
+Además: `favicon.svg`, `apple-touch-icon.png`, `og-image.png` (la imagen que aparece al compartir el enlace, 2400 × 1260), los íconos `favicon-32.png`, `favicon-48.png`, `icon-192.png` e `icon-512.png`, `robots.txt`, `sitemap.xml` y la carpeta `fonts/` con las tipografías.
 
 Al pasar de una página a otra aparece una cortina roja con una "A". Los enlaces viejos del tipo `adgb3264.github.io/#proyectos` redirigen solos a la página nueva.
 
@@ -57,7 +57,10 @@ Todas las páginas comparten **el mismo** `styles.css` y `script.js`, y repiten 
   El texto usa `--fg` (blanco en oscuro, negro en invertido). Los colores de cada modo están justo debajo: `:root` (oscuro) y `html[data-theme="light"]` (invertido). **El modo invertido es el negativo exacto del oscuro**: cada gris pasa a su opuesto (255 − valor; por ejemplo `#0a0a0a` ↔ `#f5f5f5`, `#ffffff` ↔ `#000000`). **El rojo no cambia en ningún modo** (`--red`, `--accent-text` y las esferas); `--red-deep` solo se usa para sombras de las esferas y estados al apretar.
 - **Inversión blanco / negro:** el botón con el sol / la luna, junto al del sonido, invierte todo el sitio como un efecto: la página nueva aparece dentro de un círculo que crece desde el botón (View Transitions; el icono gira). En navegadores sin esa función se usa un fundido suave, y con "reducir movimiento" el cambio es directo. Arranca en **oscuro**, recuerda la elección del visitante en todas las páginas (`localStorage`, clave `adgb-theme`) y se aplica antes de pintar la página, así no hay parpadeo. El fondo animado, los cuadros con la A (`.tile`, variables `--tile-bg` y `--tile-ink`), el color de la barra del navegador y la etiqueta del botón (ES / EN / 中文) también se adaptan. Sobre blanco, las esferas conservan un borde rojo (no casi negro) y los cuadros flotantes grises se suavizan; todo eso se ajusta en `script.js` (`RED_DEEP_LIGHT`, `INK_K`).
 - **La A grande:** al pasar el mouse o tocar con el dedo la A (y las otras letras) de la portada, sube y brilla. La clase `is-hot` la pone `script.js`; el aspecto está en `.bl.is-hot` y `.bl--a.is-hot` de `styles.css`.
-- **Las letras A D G B:** en `index.html`, dentro de `<h1 class="bigword">`. La A roja es `bl--a`.
+- **Las letras A.D.G.B:** en `index.html`, dentro de `<h1 class="bigword">`. La A roja es `bl--a` y los puntos son `bl--dot`.
+- **Zoom 75 % en PC:** todas las medidas del CSS están en `rem`. En computador (pantalla de 861 px o más, con mouse) la raíz vale `75%` (bloque `@media` justo antes de `scroll-behavior` en `styles.css`), así que el sitio se ve como con el zoom del navegador al 75 %. En celulares y tabletas queda al 100 %. Para otro zoom cambia ese `75%` (por ejemplo `80%` o `90%`); `script.js` lo lee solo para escalar el fondo animado. Si ya usas zoom en el navegador, se suma a este.
+- **La A de la cortina roja:** su color es `--wipe-ink` (negro en modo oscuro, blanco en modo claro), junto a los demás colores de cada modo en `styles.css`.
+- **La cinta con A.D.G.B** corre siempre, también al pasar el mouse (solo se detiene con la preferencia de "reducir movimiento" del sistema).
 - **El fondo de esferas y cuadros:** está dibujado en un `<canvas>` por la función `Scene` de `script.js`. Las esferas son siempre bolas rojas rellenas. Para más o menos esferas y cuadros cambia `nS` (esferas) y `nQ` (cuadros). La cuadrícula y las casillas que se encienden tienen los bordes difuminados, y el cursor deja una luz redonda y suave (sin cuadrados). Se pausa solo cuando no se ve.
 - **Agregar otra red social:** en `more/index.html`, copia el bloque de GitHub dentro de `<div class="channels">` y cambia el enlace, el nombre y el texto. Cuando tengas varias redes, puedes borrar la tarjeta "Próximamente" (`channel--soon`). Agrega también el enlace en la columna "Redes" del pie de cada página.
 - **Textos en español:** edítalos en el `.html` de cada página. **En inglés:** en el objeto `EN` de `script.js`. **En chino mandarín:** en el objeto `ZH` del mismo archivo. Todos usan la misma clave `data-i18n`; si cambias un texto, cambia también sus traducciones.
@@ -91,11 +94,11 @@ Todas las páginas comparten **el mismo** `styles.css` y `script.js`, y repiten 
 
 Está al final de `styles.css` (sección 7) y de `script.js` (bloque "Capa avanzada"):
 
-- Grano de película, cortina con borde diagonal, cabecera que se esconde al bajar, cinta que se inclina con el scroll y títulos que se revelan como máscara.
+- Grano de película (muy sutil, para no ensuciar el texto), cortina con borde diagonal, cabecera que se esconde al bajar, cinta que se inclina con el scroll y títulos que se revelan como máscara.
 - Cursor con un punto exacto y un aro redondo que lo sigue con suavidad (crece sobre enlaces y botones; no hay cuadros que lo sigan), tarjetas con foco de luz e inclinación 3D, botones magnéticos, letras de la portada con perspectiva y texto que se "descifra" en menú y botones.
 - Luz del mouse: un halo rojo grande (`.cursor-glow`) que va por delante de todo, incluido el encabezado, y alumbra lo de abajo sin taparlo (`mix-blend-mode`).
 - Efectitos: onda y chispas al hacer clic o tocar, brillo diagonal que cruza las tarjetas al pasar el mouse, línea del título que se dibuja al aparecer, la A del inicio "respira" con una luz, el cuadrito del logo gira, los enlaces del pie y las migas se subrayan en rojo, la cinta se detiene al pasar el mouse y la barra de progreso brilla.
-- Separadores difuminados: los fondos de las secciones se funden con las vecinas y las líneas son una campana desenfocada (variables `--sep-line` y `--sep-glow` en `styles.css`).
+- Separadores difuminados: ya no hay líneas ni bordes duros. La cabecera, la cinta, las secciones, el pie y el borde inferior del fondo animado se funden con lo que los rodea; cada unión es un halo suave (variable `--sep-glow` en `styles.css`).
 - Más efectos: la letra de la portada se parte con un destello al pasar el mouse (`.bl::after`), un barrido de luz cruza la portada cada pocos segundos (`.hero::before`), los botones rojos tienen un brillo que los cruza, la portada sube más lento que el scroll y se desvanece (parallax), el logo se parte al pasar el mouse, la cinta se desvanece en los bordes y, al cambiar de idioma, el texto sale y entra con desenfoque.
 - Calidad: las tres fuentes principales se precargan (solo en internet, no al abrir el archivo en el computador), el foco con teclado tiene un halo rojo, se respeta \"más contraste\" del sistema, hay estilos para imprimir (sin efectos, blanco y negro) y las páginas traen `og:image:alt` y `og:locale` para mejorar cómo se ve el enlace al compartirlo.
 - Todo se apaga solo con "reducir movimiento" y en pantallas táctiles.

@@ -410,6 +410,16 @@
   }
   function rgba(c, a) { return "rgba(" + c[0] + "," + c[1] + "," + c[2] + "," + a + ")"; }
 
+  // Escala de la interfaz: 1 en celular (100 %), 0.75 en PC. Sale del tamaño de letra raíz del CSS,
+  // así el fondo animado (esferas, cuadros, cuadrícula) crece y se achica junto con el resto del sitio.
+  var UI = 1;
+  function readUI() {
+    var fs = 16;
+    try { fs = parseFloat(getComputedStyle(html).fontSize) || 16; } catch (e) { fs = 16; }
+    UI = fs / 16;
+  }
+  readUI();
+
   var cssRed = "";
   try { cssRed = getComputedStyle(html).getPropertyValue("--red"); } catch (e) { cssRed = ""; }
   var RED = parseHex(cssRed, [225, 6, 0]);
@@ -451,17 +461,17 @@
     function rnd(a, b) { return a + Math.random() * (b - a); }
 
     function build() {
-      var k = Math.min(1.7, Math.max(0.55, (W * H) / (1280 * 760)));
+      var k = Math.min(2.1, Math.max(0.55, (W * H) / (1280 * 760 * UI * UI)));
       var small = W < 600;
       var nS = Math.round((soft ? 8 : 15) * k * (small ? 0.75 : 1));
       var nQ = Math.round((soft ? 10 : 20) * k * (small ? 0.75 : 1));
-      var rScale = small ? 0.7 : 1;
+      var rScale = (small ? 0.7 : 1) * UI;
       var i;
 
       spheres = [];
       for (i = 0; i < nS; i++) {
         var r = (8 + Math.pow(Math.random(), 2.2) * (soft ? 60 : 90)) * rScale;
-        var vx = rnd(-0.3, 0.3), vy = rnd(-0.24, 0.24);
+        var vx = rnd(-0.3, 0.3) * UI, vy = rnd(-0.24, 0.24) * UI;
         spheres.push({                     // todas las esferas son bolas rojas rellenas
           x: rnd(0, W), y: rnd(0, H), r: r,
           vx: vx, vy: vy, bx: vx, by: vy,
@@ -475,7 +485,7 @@
         squares.push({
           x: rnd(0, W), y: rnd(0, H), s: s,
           rot: rnd(0, TAU), vr: rnd(-0.004, 0.004),
-          vx: rnd(-0.18, 0.18), vy: rnd(-0.3, -0.04),
+          vx: rnd(-0.18, 0.18) * UI, vy: rnd(-0.3, -0.04) * UI,
           fill: Math.random() < 0.45, red: Math.random() < 0.5
         });
       }
@@ -486,12 +496,13 @@
       var w = Math.max(1, Math.round(r.width)), h = Math.max(1, Math.round(r.height));
       var widthChanged = Math.abs(w - W) > 1;
       var heightChanged = Math.abs(h - H) > 80;
-      dpr = Math.min(window.devicePixelRatio || 1, w < 600 ? 1.5 : 2);
+      readUI();
+      dpr = Math.min(window.devicePixelRatio || 1, 2);   // pantalla nítida: hasta 2x también en celulares
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       W = w; H = h;
-      cell = W < 600 ? 44 : 64;
+      cell = (W < 600 ? 44 : 64) * UI;
       cols = Math.ceil(W / cell) + 1;
       rows = Math.ceil(H / cell) + 1;
       heat = new Float32Array(cols * rows);
@@ -568,7 +579,7 @@
         if (mouse.on) {
           var dx = s.x - mouse.x, dy = s.y - mouse.y;
           var dist = Math.sqrt(dx * dx + dy * dy);
-          var R = s.r + 150;
+          var R = s.r + 150 * UI;
           if (dist < R && dist > 0.01) {
             var push = (1 - dist / R) * 1.3 * f;
             s.vx += (dx / dist) * push;
@@ -579,8 +590,8 @@
         // Vuelven poco a poco a su velocidad tranquila
         s.vx += (s.bx - s.vx) * 0.02 * f;
         s.vy += (s.by - s.vy) * 0.02 * f;
-        s.x += (s.vx + Math.sin(clock * 0.8 + s.ph) * 0.12) * f;
-        s.y += (s.vy + Math.cos(clock * 0.7 + s.ph) * 0.12) * f;
+        s.x += (s.vx + Math.sin(clock * 0.8 + s.ph) * 0.12 * UI) * f;
+        s.y += (s.vy + Math.cos(clock * 0.7 + s.ph) * 0.12 * UI) * f;
 
         // Rebotan en los bordes (pueden asomarse un poco)
         var m = s.r * 0.25;
@@ -628,7 +639,7 @@
 
       // Luz redonda y suave en el cursor (en lugar de casillas cuadradas)
       if (mglow > 0.01) {
-        var R = (soft ? 120 : 170), mg = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, R);
+        var R = (soft ? 120 : 170) * UI, mg = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, R);
         mg.addColorStop(0, rgba(RED, (0.16 * inten * mglow).toFixed(3)));
         mg.addColorStop(0.45, rgba(RED, (0.08 * inten * mglow).toFixed(3)));
         mg.addColorStop(1, rgba(RED, 0));
@@ -933,14 +944,20 @@
       if (y < 300 || dy < -4) header.classList.remove("is-hidden");
       else if (dy > 4 && !(nav && nav.classList.contains("is-open"))) header.classList.add("is-hidden");
     }
-    if (heroInner && FX && !reduceMotion && y < window.innerHeight * 1.3) {   // la portada sube más lento y se desvanece
-      heroInner.style.setProperty("--hp", (y * 0.16).toFixed(1));
+    if (heroInner && FX && !reduceMotion && y < 2) heroInner.classList.remove("is-par");   // arriba del todo: sin capa ni transformación
+    else if (heroInner && FX && !reduceMotion && y < window.innerHeight * 1.3) {   // la portada sube más lento y se desvanece
+      heroInner.classList.add("is-par");
+      heroInner.style.setProperty("--hp", Math.round(y * 0.16));
       heroInner.style.setProperty("--hf", Math.min(1, y / (window.innerHeight * 0.85)).toFixed(3));
     }
     if (mq && FX) {
       skewV += (Math.max(-8, Math.min(8, dy * -0.25)) - skewV) * 0.5;
+      mq.classList.add("is-skew");
       mq.style.setProperty("--sk", skewV.toFixed(2) + "deg");
-      clearTimeout(skewT); skewT = setTimeout(function () { skewV = 0; mq.style.setProperty("--sk", "0deg"); }, 120);
+      clearTimeout(skewT); skewT = setTimeout(function () {
+        skewV = 0; mq.style.setProperty("--sk", "0deg");
+        setTimeout(function () { if (!skewV) mq.classList.remove("is-skew"); }, 200);   // sin transformación al reposar
+      }, 120);
     }
   }, { passive: true });
 
@@ -957,7 +974,7 @@
     ring.className = "cur"; dot.className = "cur-dot";
     ring.setAttribute("aria-hidden", "true"); dot.setAttribute("aria-hidden", "true");
     body.appendChild(ring); body.appendChild(dot);
-    var rx = 0, ry = 0, px = 0, py = 0, seen = false, ringRaf = 0, lit = null, mag = null, bw = d.querySelector(".bigword");
+    var rx = 0, ry = 0, px = 0, py = 0, seen = false, ringRaf = 0, lit = null, mag = null, bw = d.querySelector(".bigword"), tiltT = 0;
     // El aro redondo sigue al punto con suavidad y solo se anima mientras se mueve
     var ringStep = function () {
       rx += (px - rx) * 0.2; ry += (py - ry) * 0.2;
@@ -991,8 +1008,14 @@
         m.style.setProperty("--ty", ((e.clientY - b.top - b.height / 2) * 0.3).toFixed(1) + "px");
       }
       if (bw) {
+        bw.classList.add("is-tilt");
         bw.style.setProperty("--hx", ((e.clientX / window.innerWidth - 0.5) * 8).toFixed(2) + "deg");
         bw.style.setProperty("--hy", ((0.5 - e.clientY / window.innerHeight) * 6).toFixed(2) + "deg");
+        clearTimeout(tiltT);   // si el mouse se queda quieto, la palabra vuelve a su sitio y se quita la transformación
+        tiltT = setTimeout(function () {
+          bw.style.setProperty("--hx", "0deg"); bw.style.setProperty("--hy", "0deg");
+          tiltT = setTimeout(function () { bw.classList.remove("is-tilt"); }, 500);
+        }, 1600);
       }
     }, { passive: true });
     d.addEventListener("pointerdown", function () { ring.classList.add("is-down"); dot.classList.add("is-down"); });
